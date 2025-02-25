@@ -11,12 +11,11 @@ A web application that allows users to submit and track tech support requests. A
 ## Tech Stack
 - **Frontend**: React.js, React Router, React Hot Toast
 - **Backend**: Node.js, Express.js, MongoDB
-- **Authentication**: Local Storage-based user management (to be replaced with JWT in the future)
 
 ## Installation & Setup
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/your-repo.git
+   git clone https://github.com/3omarfarok/Dern-Support.git
    cd your-repo
    ```
 2. Install dependencies:
@@ -26,12 +25,12 @@ A web application that allows users to submit and track tech support requests. A
 3. Start the backend server:
    ```sh
    cd backend
-   node server.js
+   npm run server
    ```
 4. Start the frontend:
    ```sh
    cd frontend
-   npm start
+   npm run dev
    ```
 
 ## API Endpoints
@@ -48,6 +47,5 @@ A web application that allows users to submit and track tech support requests. A
 ## Future Improvements
 - Improve UI/UX for better user experience
 - Add email notifications for request updates
-
 
 
