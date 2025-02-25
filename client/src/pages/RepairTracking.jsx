@@ -1,20 +1,40 @@
-import { useForm } from 'react-hook-form'
-import { useState } from 'react'
+import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { getRepairStatus } from '../api/repair';
+import toast from 'react-hot-toast';
 
 function RepairTracking() {
-  const { register, handleSubmit, formState: { errors } } = useForm()
-  const [trackingResult, setTrackingResult] = useState(null)
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+  const [trackingResult, setTrackingResult] = useState(null);
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const id = searchParams.get('id');
+    if (id) {
+      setValue('trackingId', id);
+      fetchRepairStatus(id);
+    }
+  }, [searchParams, setValue]);
+
+  const fetchRepairStatus = async (id) => {
+    try {
+      const response = await getRepairStatus(id);
+      setTrackingResult({
+        status: response.status,
+        requestId: response._id,
+        description: response.issue,
+        deviceType: response.deviceType,
+        updatedAt: new Date(response.updatedAt).toLocaleDateString(),
+      });
+    } catch (error) {
+      toast.error(error.message || 'Failed to fetch repair status');
+    }
+  };
 
   const onSubmit = (data) => {
-    // TODO: Implement tracking logic
-    // This is mock data for demonstration
-    setTrackingResult({
-      status: 'In Progress',
-      requestId: data.trackingId,
-      description: 'Device diagnosis in progress',
-      updatedAt: new Date().toLocaleDateString(),
-    })
-  }
+    fetchRepairStatus(data.trackingId);
+  };
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
@@ -51,6 +71,10 @@ function RepairTracking() {
               <p className="font-medium">{trackingResult.requestId}</p>
             </div>
             <div>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Device Type</p>
+              <p className="font-medium">{trackingResult.deviceType}</p>
+            </div>
+            <div>
               <p className="text-sm text-gray-600 dark:text-gray-300">Status</p>
               <p className="font-medium text-primary dark:text-secondary">
                 {trackingResult.status}
@@ -68,7 +92,7 @@ function RepairTracking() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default RepairTracking
+export default RepairTracking;

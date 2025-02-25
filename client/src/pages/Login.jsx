@@ -1,14 +1,14 @@
-import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
-  const { login } = useAuth()
-  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { login } = useAuth();
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
-  const onSubmit = (data) => {
-    login(data)
-  }
+  const onSubmit = async (data) => {
+    await login(data);
+  };
 
   return (
     <div className="max-w-md mx-auto px-4 py-12">
@@ -63,14 +63,14 @@ function Login() {
         </form>
 
         <p className="text-center mt-4">
-          Don't have an account?{' '}
+          Don&aps;t have an account?{' '}
           <Link to="/register" className="text-primary dark:text-secondary hover:underline">
             Register
           </Link>
         </p>
       </div>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

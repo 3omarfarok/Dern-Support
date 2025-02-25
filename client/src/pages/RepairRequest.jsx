@@ -1,13 +1,53 @@
-import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
+import { createRepairRequest } from '../api/repair';
 
 function RepairRequest() {
-  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const onSubmit = (data) => {
-    // TODO: Implement repair request submission logic
-    console.log(data)
-    toast.success('Repair request submitted successfully!')
+  const onSubmit = async (data) => {
+    try {
+      if (!user) {
+        toast.error('Please login to submit a repair request');
+        navigate('/login');
+        return;
+      }
+
+      const formData = {
+        deviceType: data.deviceType,
+        description: data.description,
+      };
+
+      const response = await createRepairRequest(formData);
+      toast.success(`Repair request submitted successfully! Your tracking ID is: ${response.requestId}`);
+      reset(); // Reset form after successful submission
+      
+      // Redirect to tracking page with the request ID
+      navigate(`/repair-tracking?id=${response.requestId}`);
+    } catch (error) {
+      toast.error(error.message || 'Failed to submit repair request');
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        <div className="card text-center">
+          <h2 className="text-2xl font-bold mb-4">Login Required</h2>
+          <p className="mb-4">Please login to submit a repair request.</p>
+          <button
+            onClick={() => navigate('/login')}
+            className="btn-primary"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -15,41 +55,28 @@ function RepairRequest() {
       <div className="card">
         <h2 className="text-2xl font-bold text-center mb-6">Submit Repair Request</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Name and Email fields are pre-filled from user context */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-1">
                 Full Name
               </label>
               <input
                 type="text"
-                id="name"
-                className="input-field"
-                {...register('name', { required: 'Name is required' })}
+                className="input-field bg-gray-50"
               />
-              {errors.name && (
-                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-              )}
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-1">
                 Email
               </label>
               <input
                 type="email"
-                id="email"
-                className="input-field"
-                {...register('email', {
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address',
-                  },
-                })}
+                value={user.email || ''}
+                disabled
+                className="input-field bg-gray-50"
               />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-              )}
             </div>
           </div>
 
@@ -95,26 +122,13 @@ function RepairRequest() {
             )}
           </div>
 
-          <div>
-            <label htmlFor="image" className="block text-sm font-medium mb-1">
-              Upload Image (Optional)
-            </label>
-            <input
-              type="file"
-              id="image"
-              accept="image/*"
-              className="input-field"
-              {...register('image')}
-            />
-          </div>
-
           <button type="submit" className="btn-primary w-full">
             Submit Request
           </button>
         </form>
       </div>
     </div>
-  )
+  );
 }
 
-export default RepairRequest
+export default RepairRequest;

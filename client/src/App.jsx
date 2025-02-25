@@ -6,6 +6,8 @@ import Register from './pages/Register'
 import RepairRequest from './pages/RepairRequest'
 import RepairTracking from './pages/RepairTracking'
 import AdminDashboard from './pages/admin/Dashboard'
+import RepairDetails from './pages/admin/RepairDetails'
+// import Dashboard from './pages/Dashboard'
 import Footer from './components/Footer'
 import AdminRoute from './components/AdminRoute'
 import { AuthProvider } from './context/AuthContext'
@@ -20,6 +22,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
             <Route path="/repair-request" element={<RepairRequest />} />
             <Route path="/repair-tracking" element={<RepairTracking />} />
             <Route
@@ -27,6 +30,14 @@ function App() {
               element={
                 <AdminRoute>
                   <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/repairDetails/:id"
+              element={
+                <AdminRoute>
+                  <RepairDetails /> 
                 </AdminRoute>
               }
             />

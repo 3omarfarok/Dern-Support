@@ -4,7 +4,7 @@ function Dashboard() {
   const [filter, setFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Mock data for demonstration
+
   const repairs = [
     {
       id: '1',

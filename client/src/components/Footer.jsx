@@ -36,13 +36,13 @@ function Footer() {
             </h4>
             <ul className="space-y-2 text-gray-600 dark:text-gray-300">
               <li>Email: support@dern.com</li>
-              <li>Phone: (555) 123-4567</li>
+              <li>Phone: +20 1147825907</li>
               <li>Hours: Mon-Fri 9AM-6PM</li>
             </ul>
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-gray-600 dark:text-gray-300">
-          <p>&copy; {new Date().getFullYear()} Dern Support. All rights reserved.</p>
+          <a href='https://github.com/3omarfarok' target='blanck'>&copy; {new Date().getFullYear()} Dern Support. All rights reserved.</a>
         </div>
       </div>
     </footer>

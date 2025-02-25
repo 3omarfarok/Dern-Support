@@ -1,49 +1,88 @@
-import { useState } from 'react'
-import { useAuth } from '../../context/AuthContext'
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { getAllRepairRequests, updateRepairRequest, deleteRepairRequest } from '../../api/repair';
+import toast from 'react-hot-toast';
 
 function AdminDashboard() {
-  const { user } = useAuth()
-  const [filter, setFilter] = useState('all')
-  const [searchQuery, setSearchQuery] = useState('')
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [filter, setFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [repairs, setRepairs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data for demonstration
-  const repairs = [
-    {
-      id: '1',
-      customer: 'John Doe',
-      device: 'Laptop',
-      status: 'Pending',
-      date: '2024-03-15',
-      priority: 'High'
-    },
-    {
-      id: '2',
-      customer: 'Jane Smith',
-      device: 'Smartphone',
-      status: 'In Progress',
-      date: '2024-03-14',
-      priority: 'Medium'
-    },
-    {
-      id: '3',
-      customer: 'Bob Johnson',
-      device: 'Desktop',
-      status: 'Completed',
-      date: '2024-03-13',
-      priority: 'Low'
-    },
-  ]
+  useEffect(() => {
+    fetchRepairs();
+  }, []);
+
+  const fetchRepairs = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllRepairRequests();
+      setRepairs(data.map(repair => ({
+        id: repair._id,
+        customer: repair.userId.email,
+        device: repair.deviceType,
+        status: repair.status,
+        date: new Date(repair.createdAt).toLocaleDateString(),
+        priority: repair.priority,
+        description: repair.issue
+      })));
+    } catch (error) {
+      toast.error('Failed to fetch repair requests');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateRepairStatus = async (repairId, newStatus) => {
+    try {
+      await updateRepairRequest(repairId, { status: newStatus });
+      toast.success('Repair status updated successfully');
+      fetchRepairs();
+    } catch (error) {
+      toast.error('Failed to update repair status');
+    }
+  };
+
+  const updateRepairPriority = async (repairId, newPriority) => {
+    try {
+      await updateRepairRequest(repairId, { priority: newPriority });
+      toast.success('Priority updated successfully');
+      fetchRepairs();
+    } catch (error) {
+      toast.error('Failed to update priority');
+    }
+  };
+
+  const handleDelete = async (repairId) => {
+    if (window.confirm('Are you sure you want to delete this repair request?')) {
+      try {
+        await deleteRepairRequest(repairId);
+        toast.success('Repair request deleted successfully');
+        fetchRepairs();
+      } catch (error) {
+        toast.error('Failed to delete repair request');
+      }
+    }
+  };
 
   const filteredRepairs = repairs
     .filter((repair) => filter === 'all' || repair.status.toLowerCase() === filter)
     .filter((repair) =>
       repair.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
       repair.device.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    );
 
-  const updateRepairStatus = (repairId, newStatus) => {
-    // TODO: Implement status update logic
-    console.log(`Updating repair ${repairId} to ${newStatus}`)
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl">Loading...</div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -51,7 +90,7 @@ function AdminDashboard() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">Admin Dashboard</h2>
-          <p className="text-gray-600 dark:text-gray-300">Welcome, {user.name}</p>
+          <p className="text-gray-600 dark:text-gray-300">Welcome, {user.email}</p>
         </div>
         
         <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -70,7 +109,7 @@ function AdminDashboard() {
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
-            <option value="in progress">In Progress</option>
+            <option value="in_progress">In Progress</option>
             <option value="completed">Completed</option>
           </select>
         </div>
@@ -121,23 +160,21 @@ function AdminDashboard() {
                     value={repair.status}
                     onChange={(e) => updateRepairStatus(repair.id, e.target.value)}
                   >
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
+                    <option value="pending">Pending</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
                   </select>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      repair.priority === 'High'
-                        ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                        : repair.priority === 'Medium'
-                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                        : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    }`}
+                  <select
+                    className="input-field text-sm py-1"
+                    value={repair.priority}
+                    onChange={(e) => updateRepairPriority(repair.id, e.target.value)}
                   >
-                    {repair.priority}
-                  </span>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   {repair.date}
@@ -145,13 +182,13 @@ function AdminDashboard() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <button
                     className="text-primary dark:text-secondary hover:underline mr-3"
-                    onClick={() => console.log('View details', repair.id)}
+                    onClick={() => navigate(`/admin/repairDetails/${repair.id}`)}
                   >
                     View Details
                   </button>
                   <button
                     className="text-red-600 hover:underline"
-                    onClick={() => console.log('Delete', repair.id)}
+                    onClick={() => handleDelete(repair.id)}
                   >
                     Delete
                   </button>
@@ -162,7 +199,7 @@ function AdminDashboard() {
         </table>
       </div>
     </div>
-  )
+  );
 }
 
-export default AdminDashboard
+export default AdminDashboard;

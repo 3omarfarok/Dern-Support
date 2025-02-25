@@ -1,15 +1,22 @@
-import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
-import toast from 'react-hot-toast'
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 function Register() {
-  const { register, handleSubmit, formState: { errors }, watch } = useForm()
+  const { register: registerUser } = useAuth();
+  const { register, handleSubmit, formState: { errors }, watch } = useForm();
 
-  const onSubmit = (data) => {
-    // TODO: Implement registration logic
-    console.log(data)
-    toast.success('Registration successful!')
-  }
+  const onSubmit = async (data) => {
+    if (data.password !== data.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    
+    // Remove confirmPassword before sending to backend
+    const { confirmPassword, ...registerData } = data;
+    await registerUser(registerData);
+  };
 
   return (
     <div className="max-w-md mx-auto px-4 py-12">
@@ -91,7 +98,7 @@ function Register() {
                 required: 'Please confirm your password',
                 validate: (val) => {
                   if (watch('password') !== val) {
-                    return 'Passwords do not match'
+                    return 'Passwords do not match';
                   }
                 },
               })}
@@ -114,7 +121,7 @@ function Register() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
-export default Register
+export default Register;
