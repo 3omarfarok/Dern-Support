@@ -4,6 +4,17 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
+router.get('/all', authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Not Allowed' });
+        }
+        const requests = await Request.find().populate('userId', 'email');
+        res.json(requests);
+    } catch (err) {
+        res.status(500).json({ message: 'Error in Server' });
+    }
+});
 
 router.post('/create', authMiddleware, async (req, res) => {
     try {
@@ -28,10 +39,10 @@ router.post('/create', authMiddleware, async (req, res) => {
     }
 });
 
-
-router.get('/:id', async (req, res) => {
+// Update this route to populate userId
+router.get('/:id', authMiddleware, async (req, res) => {
     try {
-        const request = await Request.findById(req.params.id);
+        const request = await Request.findById(req.params.id).populate('userId', 'email');
         if (!request) return res.status(404).json({ message: 'Not Found the Request' });
 
         res.json(request);
@@ -40,20 +51,22 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-
 router.put('/:id', authMiddleware, async (req, res) => {
     try {
         if (req.user.role !== 'admin') return res.status(403).json({ message: 'Not Allowed' });
 
         const { status, priority } = req.body;
-        await Request.findByIdAndUpdate(req.params.id, { status, priority });
+        const updatedRequest = await Request.findByIdAndUpdate(
+            req.params.id, 
+            { status, priority },
+            { new: true }
+        ).populate('userId', 'email');
 
-        res.json({ message: 'Request is updated' });
+        res.json(updatedRequest);
     } catch (err) {
         res.status(500).json({ message: 'Error in Server' });
     }
 });
-
 
 router.delete('/:id', authMiddleware, async (req, res) => {
     try {
