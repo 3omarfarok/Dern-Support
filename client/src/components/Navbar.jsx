@@ -258,18 +258,7 @@ function Navbar() {
                           Dashboard
                         </Link>
                       </motion.div>
-                      <motion.div
-                        variants={linkVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                      >
-                        <Link
-                          to="/admin/repairs"
-                          className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                        >
-                          Manage Repairs
-                        </Link>
-                      </motion.div>
+                      
                       <motion.div
                         variants={linkVariants}
                         whileHover="hover"
@@ -282,18 +271,7 @@ function Navbar() {
                           Manage Users
                         </Link>
                       </motion.div>
-                      <motion.div
-                        variants={linkVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                      >
-                        <Link
-                          to="/admin/reports"
-                          className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                        >
-                          Reports
-                        </Link>
-                      </motion.div>
+                      
                     </>
                   ) : (
                     <>
@@ -351,7 +329,7 @@ function Navbar() {
                   >
                     <Link
                       to="/login"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                      className="block px-3 py-2 rounded-md text-base font-medium btn-primary  dark:text-white dark:hover:text-secondary"
                     >
                       Login
                     </Link>
