@@ -1,13 +1,23 @@
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 
 function Login() {
   const { login } = useAuth();
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (data) => {
-    await login(data);
+    try {
+      setIsSubmitting(true);
+      await login(data);
+    } catch (error) {
+      // Error handling is managed by the auth context
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -23,10 +33,11 @@ function Login() {
               type="email"
               id="email"
               className="input-field"
+              disabled={isSubmitting}
               {...register('email', {
                 required: 'Email is required',
                 pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$/i,
                   message: 'Invalid email address',
                 },
               })}
@@ -44,6 +55,7 @@ function Login() {
               type="password"
               id="password"
               className="input-field"
+              disabled={isSubmitting}
               {...register('password', {
                 required: 'Password is required',
                 minLength: {
@@ -57,8 +69,19 @@ function Login() {
             )}
           </div>
 
-          <button type="submit" className="btn-primary w-full">
-            Login
+          <button 
+            type="submit" 
+            className="btn-primary w-full flex items-center justify-center"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                Logging in...
+              </>
+            ) : (
+              'Login'
+            )}
           </button>
         </form>
 

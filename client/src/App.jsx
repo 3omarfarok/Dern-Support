@@ -7,6 +7,7 @@ import RepairRequest from './pages/RepairRequest'
 import RepairTracking from './pages/RepairTracking'
 import AdminDashboard from './pages/admin/Dashboard'
 import RepairDetails from './pages/admin/RepairDetails'
+import ManageUsers from './pages/admin/ManageUsers'
 // import Dashboard from './pages/Dashboard'
 import Footer from './components/Footer'
 import AdminRoute from './components/AdminRoute'
@@ -38,6 +39,14 @@ function App() {
               element={
                 <AdminRoute>
                   <RepairDetails /> 
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <AdminRoute>
+                  <ManageUsers />
                 </AdminRoute>
               }
             />

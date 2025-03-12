@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getRepairStatus, updateRepairRequest } from '../../api/repair';
+import { getRepairStatus, updateRepairRequest, deleteRepairRequest } from '../../api/repair';
 import toast from 'react-hot-toast';
 
 function RepairDetails() {
@@ -48,6 +48,18 @@ function RepairDetails() {
     }
   };
 
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this repair request?')) {
+      try {
+        await deleteRepairRequest(repair._id);
+        toast.success('Repair request deleted successfully');
+        navigate('/admin/dashboard');
+      } catch (error) {
+        toast.error('Failed to delete repair request');
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-12">
@@ -80,12 +92,20 @@ function RepairDetails() {
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Repair Request Details</h2>
-            <button
-              onClick={() => navigate('/admin/dashboard')}
-              className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-            >
-              Back to Dashboard
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate('/admin/dashboard')}
+                className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+              >
+                Back to Dashboard
+              </button>
+              <button
+                onClick={handleDelete}
+                className="text-red-600 hover:text-red-800 dark:hover:text-red-400"
+              >
+                Delete Request
+              </button>
+            </div>
           </div>
         </div>
 

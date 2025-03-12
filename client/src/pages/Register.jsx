@@ -2,20 +2,30 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 
 function Register() {
   const { register: registerUser } = useAuth();
   const { register, handleSubmit, formState: { errors }, watch } = useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (data) => {
     if (data.password !== data.confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
-    
-    // Remove confirmPassword before sending to backend
-    const { confirmPassword, ...registerData } = data;
-    await registerUser(registerData);
+
+    try {
+      setIsSubmitting(true);
+      // Remove confirmPassword before sending to backend
+      const { confirmPassword, ...registerData } = data;
+      await registerUser(registerData);
+    } catch (error) {
+      // Error handling is managed by the auth context
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -31,6 +41,7 @@ function Register() {
               type="text"
               id="name"
               className="input-field"
+              disabled={isSubmitting}
               {...register('name', {
                 required: 'Name is required',
                 minLength: {
@@ -52,6 +63,7 @@ function Register() {
               type="email"
               id="email"
               className="input-field"
+              disabled={isSubmitting}
               {...register('email', {
                 required: 'Email is required',
                 pattern: {
@@ -73,6 +85,7 @@ function Register() {
               type="password"
               id="password"
               className="input-field"
+              disabled={isSubmitting}
               {...register('password', {
                 required: 'Password is required',
                 minLength: {
@@ -94,6 +107,7 @@ function Register() {
               type="password"
               id="confirmPassword"
               className="input-field"
+              disabled={isSubmitting}
               {...register('confirmPassword', {
                 required: 'Please confirm your password',
                 validate: (val) => {
@@ -108,8 +122,19 @@ function Register() {
             )}
           </div>
 
-          <button type="submit" className="btn-primary w-full">
-            Register
+          <button 
+            type="submit" 
+            className="btn-primary w-full flex items-center justify-center"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                Creating account...
+              </>
+            ) : (
+              'Register'
+            )}
           </button>
         </form>
 

@@ -43,6 +43,67 @@ function Navbar() {
     }
   };
 
+  const renderAdminLinks = () => (
+    <>
+      <motion.div
+        variants={linkVariants}
+        whileHover="hover"
+        whileTap="tap"
+      >
+        <Link
+          to="/admin/dashboard"
+          className="text-dark dark:text-white hover:text-primary dark:hover:text-secondary"
+        >
+          Dashboard
+        </Link>
+      </motion.div>
+
+      <motion.div
+        variants={linkVariants}
+        whileHover="hover"
+        whileTap="tap"
+      >
+        <Link
+          to="/admin/users"
+          className="text-dark dark:text-white hover:text-primary dark:hover:text-secondary"
+        >
+          Manage Users
+        </Link>
+      </motion.div>
+
+    </>
+  );
+
+  const renderUserLinks = () => (
+    <>
+      <motion.div
+        variants={linkVariants}
+        whileHover="hover"
+        whileTap="tap"
+      >
+        <Link
+          to="/repair-request"
+          className="btn-primary"
+        >
+          Request Repair
+        </Link>
+      </motion.div>
+
+      <motion.div
+        variants={linkVariants}
+        whileHover="hover"
+        whileTap="tap"
+      >
+        <Link
+          to="/repair-tracking"
+          className="text-dark dark:text-white hover:text-primary dark:hover:text-secondary"
+        >
+          Track Repair
+        </Link>
+      </motion.div>
+    </>
+  );
+
   return (
     <motion.nav 
       className="bg-white dark:bg-dark shadow-md"
@@ -102,31 +163,7 @@ function Navbar() {
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center gap-6">
-            <motion.div
-              variants={linkVariants}
-              whileHover="hover"
-              whileTap="tap"
-            >
-              <Link
-                to="/repair-request"
-                className="btn-primary"
-              >
-                Request Repair
-              </Link>
-            </motion.div>
-
-            <motion.div
-              variants={linkVariants}
-              whileHover="hover"
-              whileTap="tap"
-            >
-              <Link
-                to="/repair-tracking"
-                className="text-dark dark:text-white hover:text-primary dark:hover:text-secondary"
-              >
-                Track Repair
-              </Link>
-            </motion.div>
+            {user && (isAdmin() ? renderAdminLinks() : renderUserLinks())}
 
             {user ? (
               <>
@@ -137,20 +174,6 @@ function Navbar() {
                   <User className="w-4 h-4" />
                   <span>{user.email}</span>
                 </motion.div>
-                {isAdmin() && (
-                  <motion.div
-                    variants={linkVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                  >
-                    <Link
-                      to="/admin/dashboard"
-                      className="text-dark dark:text-white hover:text-primary dark:hover:text-secondary"
-                    >
-                      Admin Dashboard
-                    </Link>
-                  </motion.div>
-                )}
                 <motion.button
                   onClick={logout}
                   className="text-primary font-bold dark:text-secondary hover:text-black dark:hover:text-white"
@@ -168,7 +191,7 @@ function Navbar() {
               >
                 <Link
                   to="/login"
-                  className="text-dark dark:text-white hover:text-primary dark:hover:text-secondary"
+                    className=" btn-primary  dark:text-white dark:hover:text-secondary"
                 >
                   Login
                 </Link>
@@ -220,42 +243,9 @@ function Navbar() {
               exit="closed"
             >
               <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <motion.div
-                  variants={linkVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                >
-                  <Link
-                    to="/repair-request"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    Request Repair
-                  </Link>
-                </motion.div>
-
-                <motion.div
-                  variants={linkVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                >
-                  <Link
-                    to="/repair-tracking"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    Track Repair
-                  </Link>
-                </motion.div>
-
-                {user ? (
-                  <>
-                    <motion.div 
-                      className="px-3 py-2 text-base font-medium text-dark dark:text-white flex items-center gap-2"
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <User className="w-4 h-4" />
-                      <span>{user.email}</span>
-                    </motion.div>
-                    {isAdmin() && (
+                {user && (
+                  isAdmin() ? (
+                    <>
                       <motion.div
                         variants={linkVariants}
                         whileHover="hover"
@@ -265,10 +255,85 @@ function Navbar() {
                           to="/admin/dashboard"
                           className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
                         >
-                          Admin Dashboard
+                          Dashboard
                         </Link>
                       </motion.div>
-                    )}
+                      <motion.div
+                        variants={linkVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                      >
+                        <Link
+                          to="/admin/repairs"
+                          className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                        >
+                          Manage Repairs
+                        </Link>
+                      </motion.div>
+                      <motion.div
+                        variants={linkVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                      >
+                        <Link
+                          to="/admin/users"
+                          className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                        >
+                          Manage Users
+                        </Link>
+                      </motion.div>
+                      <motion.div
+                        variants={linkVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                      >
+                        <Link
+                          to="/admin/reports"
+                          className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                        >
+                          Reports
+                        </Link>
+                      </motion.div>
+                    </>
+                  ) : (
+                    <>
+                      <motion.div
+                          variants={linkVariants}
+                          whileHover="hover"
+                          whileTap="tap"
+                        >
+                          <Link
+                            to="/repair-request"
+                            className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                          >
+                            Request Repair
+                          </Link>
+                        </motion.div>
+                      <motion.div
+                        variants={linkVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                      >
+                        <Link
+                            to="/repair-tracking"
+                          className="block px-3 py-2 rounded-md text-base font-medium text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                        >
+                            Track Repair
+                        </Link>
+                      </motion.div>
+                      </>
+                    )
+                )}
+
+                {user ? (
+                  <>
+                    <motion.div
+                      className="px-3 py-2 text-base font-medium text-dark dark:text-white flex items-center gap-2"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <User className="w-4 h-4" />
+                      <span>{user.email}</span>
+                    </motion.div>
                     <motion.button
                       onClick={logout}
                       className="block w-full text-left px-3 py-2 rounded-md text-base font-semibold text-primary dark:text-secondary hover:text-black dark:hover:text-white"
